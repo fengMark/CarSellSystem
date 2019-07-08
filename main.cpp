@@ -5,10 +5,13 @@
 #include <QSplashScreen>
 #include <QPixmap>
 #include <QDebug>
+#include <QTranslator>
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
+    QTranslator *translator = new QTranslator;
+    translator->load("F:/CarMamagentSystem/CarMamagentSystem/CarMamagentSystem.qm");
+    a.installTranslator(translator);
     QString dir = QCoreApplication ::applicationDirPath();
     qDebug()<<dir<<endl;
     QPixmap pixmap(dir+"/APPUpLoading.jpg");

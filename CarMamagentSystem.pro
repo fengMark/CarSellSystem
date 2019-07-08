@@ -36,3 +36,5 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     logindialog.ui
+
+TRANSLATIONS = CarMamagentSystem.ts
