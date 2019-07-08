@@ -8,6 +8,10 @@
 #include <QKeySequence>
 #include <QTableView>
 #include <windows.h>
+#include <QInputDialog>
+#include <QLineEdit>
+#include <connectsql.h>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -54,8 +58,16 @@ void MainWindow::CreateMenuBar()
     manageMenu->addAction(DataAction);
     manageMenu->addAction(quitAction);
 
-    passwordMenu = menuBar()->addMenu(tr("修改密码"));
+    PwdAction = new QAction(tr("密码修改"));
+    PwdAction->setObjectName("PwdAction");
 
+    PwdAction->setShortcut(QKeySequence("Ctrl+P"));
+
+    SystemMenu = menuBar()->addMenu(tr("系统管理"));
+    SystemMenu->addAction(PwdAction);
+
+
+    connect(PwdAction,SIGNAL(triggered(bool)),this,SLOT(changePwd_clicked()));
     connect(manageAction,SIGNAL(triggered(bool)),this,SLOT(manageMenu_clicked()));
     connect(chartAction,SIGNAL(triggered(bool)),this,SLOT(chartMenu_clicked()));
     connect(quitAction,SIGNAL(triggered(bool)),this,SLOT(quitMenu_clicked()));
@@ -157,10 +169,12 @@ void MainWindow::on_OKpushButton_clicked()
 void MainWindow::manageMenu_clicked()
 {
     ui->stackedWidget->setCurrentIndex(0);
+    ui->label->setText(tr("品牌车辆管理"));
 }
 void MainWindow::chartMenu_clicked()
 {
     ui->stackedWidget->setCurrentIndex(1);
+    ui->label->setText(tr("销售统计"));
 }
 void MainWindow::quitMenu_clicked()
 {
@@ -170,6 +184,42 @@ void MainWindow::on_CancelpushButton_clicked()
 {
     ui->sellFactorycomboBox->setCurrentIndex(0);
     ui->sellBrandcomboBox->clear();
+}
+
+void MainWindow::changePwd_clicked()
+{
+    bool ok = false;
+    QString pwdOldOnce = QInputDialog::getText(this,tr("请输入原始密码"),tr("旧密码"),QLineEdit::Password,NULL,&ok);
+
+    if(ok&&!pwdOldOnce.isEmpty())
+    {
+        QString pwdOldTwice = QInputDialog::getText(this,tr("请再次原始密码"),tr("旧密码"),QLineEdit::Password,NULL,&ok);
+        if(ok&&!pwdOldTwice.isEmpty()&&pwdOldTwice==pwdOldOnce)
+        {
+            QSqlQuery query;
+            query.exec("select pwd from password");
+            query.next();
+            if(query.value(0).toString()==pwdOldOnce)
+            {
+                QString pwdNewOnce = QInputDialog::getText(this,tr("请输入新密码"),tr("新密码"),QLineEdit::Password,NULL,&ok);
+                if(ok&&!pwdNewOnce.isEmpty())
+                {
+                    QString pwdNewTwice = QInputDialog::getText(this,tr("请再次输入新密码"),tr("新密码"),QLineEdit::Password,NULL,&ok);
+                    if(ok&&!pwdNewTwice.isEmpty()&&pwdNewOnce==pwdNewTwice)
+                    {
+                        changePwd(pwdOldTwice,pwdNewOnce);
+                    }
+                    else
+                    {
+                        QMessageBox::information(this,tr("密码错误"),tr("新密码输入两次不一致"),QMessageBox::Ok);
+                    }
+                }
+            }else
+            {
+                QMessageBox::information(this,tr("密码错误"),tr("请先输入正确旧密码再更改"),QMessageBox::Ok);
+            }
+        }
+    }
 }
 
 //void MainWindow::createChartModelView()

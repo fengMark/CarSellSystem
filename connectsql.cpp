@@ -6,9 +6,11 @@
 #include<QIODevice>
 #include<QDomDocument>
 
+QSqlDatabase db;
+
 bool createConnection()
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db = QSqlDatabase::addDatabase("QSQLITE");
     db.setHostName("127.0.0.1");
     db.setDatabaseName("F:\\CarMamagentSystem\\CarMamagentSystem\\carInfo.db");
     db.setUserName("markfeng");
@@ -47,11 +49,15 @@ bool createConnection()
     {
         qDebug()<<"open error"<<endl;
     }
-    query.exec("insert into password values('123456')");
-
     return true;
 }
 
+bool changePwd(QString &oldPwd,QString &newPwd)
+{
+    QSqlQuery query(db);
+    query.exec(QString("delete from password where pwd='%1'").arg(oldPwd));
+    return query.exec(QString("insert into password values('%1')").arg(newPwd));
+}
 
 bool createXml()
 {

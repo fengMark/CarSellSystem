@@ -39,6 +39,8 @@ private slots:
 
     void on_CancelpushButton_clicked();
 
+    void changePwd_clicked();
+
 //    void on_factoryCmbox_currentIndexChanged(const QString &arg1);
 
 //    void on_updateBtn_clicked();
@@ -61,11 +63,12 @@ private:
     QDomDocument doc;
     Ui::MainWindow *ui;
     QMenu *manageMenu;
-    QMenu *passwordMenu;
+    QMenu *SystemMenu;
     QAction *manageAction;
     QAction *chartAction;
     QAction *quitAction;
     QAction *DataAction;
+    QAction *PwdAction;
     QStandardItemModel *chartModel;
 };
 
